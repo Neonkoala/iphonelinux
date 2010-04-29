@@ -1032,6 +1032,18 @@ void cmd_vibrator_off(int argc, char** argv)
 	vibrator_off();
 }
 
+void cmd_boot_iphoneos(int argc, char** argv)
+{
+	bufferPrintf("Booting iPhone OS.\r\n");
+	
+	Image* image = images_get(fourcc("ibox"));
+	if(image == NULL)
+		image = images_get(fourcc("ibot"));
+	void* imageData;
+	images_read(image, &imageData);
+	chainload((uint32_t)imageData);
+}
+
 void cmd_help(int argc, char** argv) {
 	OPIBCommand* curCommand = CommandList;
 	while(curCommand->name != NULL) {
@@ -1116,6 +1128,7 @@ OPIBCommand CommandList[] =
 		{"ramdisk", "load a Linux ramdisk", cmd_ramdisk},
 		{"rootfs", "specify a file as the Linux rootfs", cmd_rootfs},
 		{"boot", "boot a Linux kernel", cmd_boot},
+		{"boot_iphoneos", "boot iphone os", cmd_boot_iphoneos},
 		{"go", "jump to a specified address (interrupts disabled)", cmd_go},
 		{"jump", "jump to a specified address (interrupts enabled)", cmd_jump},
 		{"version", "display the version string", cmd_version},
