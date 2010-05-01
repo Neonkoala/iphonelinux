@@ -114,10 +114,11 @@ int menu_setup(int timeout, int defaultOS) {
 			Selection = MenuSelectioniPhoneOS;
 			break;
 		case 1:
-			selection = MenuSelectionConsole;
+			Selection = MenuSelectionConsole;
 			break;
 		case 2:
-			selection = MenuSelectionConsole;
+			Selection = MenuSelectionConsole;
+			break;
 		default:
 			Selection = MenuSelectioniPhoneOS;
 			break;
@@ -127,22 +128,22 @@ int menu_setup(int timeout, int defaultOS) {
 	pmu_set_iboot_stage(0);
 
 	uint64_t startTime = timer_get_system_microtime();
-	uint64_t timeoutLeft = (uint64_t) timeout;
+	int timeoutLeft = timeout / 1000;
+	int timeoutLeftb = timeout / 1000;
 	while(TRUE) {
-/*		if(timeout > 0){
-			if(has_elapsed(startTime, ((uint64_t) timeout - timeoutLeft) * 1000){
-				timeoutLeft -= 1000;
+		if(timeout > 0){
+			if(has_elapsed(startTime, (uint64_t)(timeout - (timeoutLeft * 1000)) * 1000)){
 				char timeoutstr[5] = "";
-				if(timeoutLeft % 1000 = 0){
-					sprintf(timeoutstr, "%d", (int)(timeoutLeft / 1000);
+				timeoutLeft -= 1;
+				if(timeoutLeft != timeoutLeftb){
+					sprintf(timeoutstr, "%d", timeoutLeft + 1);
 					framebuffer_setloc(0,47);
 					framebuffer_print_force(timeoutstr);
 					framebuffer_setloc(0,0);
+					timeoutLeftb -= 1;
 				}
-			
 			}
-			if(has_elapsed(startTime, 
-		}*/   // timeout print code here
+		}   // timeout print code here
 		if(buttons_is_pushed(BUTTONS_HOLD)) {
 			toggle();
 			startTime = timer_get_system_microtime();
