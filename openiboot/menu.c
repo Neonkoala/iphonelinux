@@ -108,8 +108,20 @@ int menu_setup(int timeout, int defaultOS) {
 	framebuffer_setcolors(COLOR_WHITE, COLOR_BLACK);
 	framebuffer_setloc(0, 0);
 
-	Selection = MenuSelectioniPhoneOS;
 
+	switch(defaultOS){
+		case 0:
+			Selection = MenuSelectioniPhoneOS;
+			break;
+		case 1:
+			selection = MenuSelectionConsole;
+			break;
+		case 2:
+			selection = MenuSelectionConsole;
+		default:
+			Selection = MenuSelectioniPhoneOS;
+			break;
+	}
 	drawSelectionBox();
 
 	pmu_set_iboot_stage(0);
@@ -178,7 +190,7 @@ int menu_setup(int timeout, int defaultOS) {
 			if(!buttons_is_pushed(BUTTONS_HOME))
 				break;
 
-			if(has_elapsed(startTime, (uint64_t)2000 * 1000)) {
+			if(has_elapsed(startTime, (uint64_t)2000 * 1000) || defaultOS == 2) {
 				framebuffer_setdisplaytext(TRUE);
 				framebuffer_clear();
 				radio_setup();
