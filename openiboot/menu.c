@@ -145,7 +145,7 @@ int menu_setup(int timeout, int defaultOS) {
 			}
 		}   // timeout print code here ^^
 		else if(timeout == -1){
-			framebuffer_setloc(50,47);
+			framebuffer_setloc(49,47);
 			framebuffer_print_force("  ");
 			framebuffer_setloc(0,0);
 		}

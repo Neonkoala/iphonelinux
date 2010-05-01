@@ -332,19 +332,19 @@ static int calibrate()
 
 		if(!writeRegister(0x10001C08, 0x840000, 0xFF0000))
 		{
-			bufferPrintf("multitouch: error writing to register 0x10001C04\r\n");
+			bufferPrintf("multitouch: error writing to register 0x10001C08\r\n");
 			return FALSE;
 		}
 
 		if(!writeRegister(0x10001C0C, 0x05, 0x85))
 		{
-			bufferPrintf("multitouch: error writing to register 0x10001C04\r\n");
-			return FALSE;
+			bufferPrintf("multitouch: error writing to register 0x10001C0C\r\n");
+//			return FALSE;
 		}
 
 		if(!writeRegister(0x1000304C, 0x20, 0xFFFFFFFF))
 		{
-			bufferPrintf("multitouch: error writing to register 0x10001C04\r\n");
+			bufferPrintf("multitouch: error writing to register 0x1000304C\r\n");
 			return FALSE;
 		}
 
