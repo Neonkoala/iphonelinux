@@ -110,7 +110,7 @@ static void toggle(int direction) {
 	drawSelectionBox();
 }
 
-int menu_setup(int timeout) {
+int menu_setup(int timeout, int defaultOS) {
 	FBWidth = currentWindow->framebuffer.width;
 	FBHeight = currentWindow->framebuffer.height;	
 
@@ -144,42 +144,68 @@ int menu_setup(int timeout) {
 	framebuffer_setcolors(COLOR_WHITE, COLOR_BLACK);
 	framebuffer_setloc(0, 0);
 
-	Selection = MenuSelectioniPhoneOS;
 
+	switch(defaultOS){
+		case 0:
+			Selection = MenuSelectioniPhoneOS;
+			break;
+		case 1:
+			Selection = MenuSelectionConsole;
+			break;
+		case 2:
+			Selection = MenuSelectionConsole;
+			break;
+		default:
+			Selection = MenuSelectioniPhoneOS;
+	}
 	drawSelectionBox();
 
 	pmu_set_iboot_stage(0);
 
 	uint64_t startTime = timer_get_system_microtime();
-	uint64_t powerStartTime = timer_get_system_microtime();
+/*	uint64_t timeoutLeft = (uint64_t) timeout; */
 
 	while(TRUE) {
+/*		if(timeout > 0){
+			if(has_elapsed(startTime, ((uint64_t) timeout - timeoutLeft) * 1000){
+				timeoutLeft -= 1000;
+				char timeoutstr[5] = "";
+				if(timeoutLeft % 1000 = 0){
+					sprintf(timeoutstr, "%d", (int)(timeoutLeft / 1000);
+					framebuffer_setloc(0,47);
+					framebuffer_print_force(timeoutstr);
+					framebuffer_setloc(0,0);
+				}
+			
+			}
+			if(has_elapsed(startTime, 
+		}*/   // timeout print code here
 		if(buttons_is_pushed(BUTTONS_HOLD)) {
-			if(has_elapsed(powerStartTime, (uint64_t)300 * 1000)) {
-			} else if(has_elapsed(powerStartTime, (uint64_t)200 * 1000)) {
-				toggle(ToggleDown);
-			}
-			if(has_elapsed(powerStartTime, (uint64_t)2000 * 1000)) {
-				pmu_poweroff();
-			}
-			udelay(200000);
-		} else {
-			powerStartTime = timer_get_system_microtime();
+			toggle(ToggleDown);
+			startTime = timer_get_system_microtime();
+			timeout = -1;
+			defaultOS = -1;
 			udelay(200000);
 		}
 #ifndef CONFIG_IPOD
 		if(!buttons_is_pushed(BUTTONS_VOLUP)) {
 			toggle(ToggleUp);
 			startTime = timer_get_system_microtime();
+			timeout = -1;
+			defaultOS = -1;
 			udelay(200000);
 		}
 		if(!buttons_is_pushed(BUTTONS_VOLDOWN)) {
 			toggle(ToggleDown);
 			startTime = timer_get_system_microtime();
+			timeout = -1;
+			defaultOS = -1;
 			udelay(200000);
 		}
 #endif
 		if(buttons_is_pushed(BUTTONS_HOME)) {
+			timeout = -1;
+			defaultOS = -1;
 			break;
 		}
 		if(timeout > 0 && has_elapsed(startTime, (uint64_t)timeout * 1000)) {
@@ -205,20 +231,32 @@ int menu_setup(int timeout) {
 
 	if(Selection == MenuSelectioniDroid) {
 #ifndef NO_HFS
-		framebuffer_setdisplaytext(TRUE);
-		framebuffer_clear();
-		radio_setup();
-		nand_setup();
-		fs_setup();
-		if(globalFtlHasBeenRestored) /* if ftl has been restored, sync it, so kernel doesn't have to do a ftl_restore again */
-		{
-			if(ftl_sync())
-			{
-				bufferPrintf("ftl synced successfully");
-			}
-			else
-			{
-				bufferPrintf("error syncing ftl");
+		startTime = timer_get_system_microtime();
+		while(TRUE) {
+			if(!buttons_is_pushed(BUTTONS_HOME))
+				break;
+
+			if(has_elapsed(startTime, (uint64_t)2000 * 1000) || defaultOS == 1) {
+				framebuffer_setdisplaytext(TRUE);
+				framebuffer_clear();
+				radio_setup();
+				nand_setup();
+				fs_setup();
+				if(globalFtlHasBeenRestored) /* if ftl has been restored, sync it, so kernel doesn't have to do a ftl_restore again */
+				{
+					if(ftl_sync())
+					{
+						bufferPrintf("ftl synced successfully");
+					}
+					else
+					{
+						bufferPrintf("error syncing ftl");
+					}
+				}
+
+				pmu_set_iboot_stage(0);
+				startScripting("linux"); //start script mode if there is a script file
+				boot_linux_from_files();
 			}
 		}
 

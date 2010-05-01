@@ -77,11 +77,15 @@ void OpenIBootStart() {
 	} else {
 		framebuffer_setdisplaytext(FALSE);
 		const char* sMenuTimeout = nvram_getvar("opib-menu-timeout");
+		const char* sDefaultOS = nvram_getvar("opib-default-os");
+		int defaultOS = 0;
+		if(sDefaultOS)
+			defaultOS = parseNumber(sDefaultOS);
 		int menuTimeout = -1;
 		if(sMenuTimeout)
 			menuTimeout = parseNumber(sMenuTimeout);
 
-		menu_setup(menuTimeout);
+		menu_setup(menuTimeout, defaultOS);
 	}
 #endif
 #endif
