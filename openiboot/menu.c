@@ -136,7 +136,7 @@ int menu_setup(int timeout, int defaultOS) {
 				char timeoutstr[5] = "";
 				timeoutLeft -= 1;
 				if(timeoutLeft != timeoutLeftb){
-					sprintf(timeoutstr, "%d", timeoutLeft + 1);
+					sprintf(timeoutstr, "%d ", timeoutLeft + 1);
 					framebuffer_setloc(50,47);
 					framebuffer_print_force(timeoutstr);
 					framebuffer_setloc(0,0);
