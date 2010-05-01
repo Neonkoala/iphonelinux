@@ -137,13 +137,13 @@ int menu_setup(int timeout, int defaultOS) {
 				timeoutLeft -= 1;
 				if(timeoutLeft != timeoutLeftb){
 					sprintf(timeoutstr, "%d", timeoutLeft + 1);
-					framebuffer_setloc(0,47);
+					framebuffer_setloc(0,45);
 					framebuffer_print_force(timeoutstr);
 					framebuffer_setloc(0,0);
 					timeoutLeftb -= 1;
 				}
 			}
-		}   // timeout print code here
+		}   // timeout print code here ^^
 		if(buttons_is_pushed(BUTTONS_HOLD)) {
 			toggle();
 			startTime = timer_get_system_microtime();
