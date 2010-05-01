@@ -146,6 +146,8 @@ int menu_setup(int timeout, int defaultOS) {
 		if(buttons_is_pushed(BUTTONS_HOLD)) {
 			toggle();
 			startTime = timer_get_system_microtime();
+			timeout = -1;
+			defaultOS = -1;
 			udelay(200000);
 		}
 #ifndef CONFIG_IPOD
@@ -154,6 +156,8 @@ int menu_setup(int timeout, int defaultOS) {
 
 			drawSelectionBox();
 			startTime = timer_get_system_microtime();
+			timeout = -1;
+			defaultOS = -1;
 			udelay(200000);
 		}
 		if(!buttons_is_pushed(BUTTONS_VOLDOWN)) {
@@ -161,10 +165,14 @@ int menu_setup(int timeout, int defaultOS) {
 
 			drawSelectionBox();
 			startTime = timer_get_system_microtime();
+			timeout = -1;
+			defaultOS = -1;
 			udelay(200000);
 		}
 #endif
 		if(buttons_is_pushed(BUTTONS_HOME)) {
+			timeout = -1;
+			defaultOS = -1;
 			break;
 		}
 		if(timeout > 0 && has_elapsed(startTime, (uint64_t)timeout * 1000)) {
@@ -190,7 +198,7 @@ int menu_setup(int timeout, int defaultOS) {
 			if(!buttons_is_pushed(BUTTONS_HOME))
 				break;
 
-			if(has_elapsed(startTime, (uint64_t)2000 * 1000) || defaultOS == 2) {
+			if(has_elapsed(startTime, (uint64_t)2000 * 1000) || defaultOS == 1) {
 				framebuffer_setdisplaytext(TRUE);
 				framebuffer_clear();
 				radio_setup();
