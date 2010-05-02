@@ -163,6 +163,7 @@ int menu_setup(int timeout, int defaultOS) {
 	pmu_set_iboot_stage(0);
 
 	uint64_t startTime = timer_get_system_microtime();
+	uint64_t holdStartTime = timer_get_system_microtime();
 	int timeoutLeft = timeout / 1000;
 	int timeoutLeftb = timeout / 1000;
 
@@ -186,10 +187,17 @@ int menu_setup(int timeout, int defaultOS) {
 			framebuffer_setloc(0,0);
 		}
 		if(buttons_is_pushed(BUTTONS_HOLD)) {
-			toggle(ToggleDown);
-			startTime = timer_get_system_microtime();
+			if(has_elapsed(holdStartTime, (uint64_t)10 * 1000)) {
+				toggle(ToggleDown);
+			} 
+			if(has_elapsed(holdStartTime, (uint64_t)2000 * 1000)) {
+				pmu_poweroff();
+			}
 			timeout = -1;
 			defaultOS = -1;
+			udelay(200000);
+		} else {
+			holdStartTime = timer_get_system_microtime();
 			udelay(200000);
 		}
 #ifndef CONFIG_IPOD
