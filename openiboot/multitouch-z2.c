@@ -306,11 +306,13 @@ static uint32_t writeRegister(uint32_t address, uint32_t value, uint32_t mask)
 	tx[15] = checksum & 0xFF;
 	int try;
 	for(try=0; try<4; ++try){
-		udelay(1000);
+		udelay(5000);
 		GotATN = 0;
 		mt_spi_txrx(NORMAL_SPEED, tx, sizeof(tx), rx, sizeof(rx));
-		if(performHBPPATN_ACK() == 0x4AD1)
+		if(performHBPPATN_ACK() == 0x4AD1){
+			bufferPrintf("multitouch: writeRegister trys = %d\r\n", try);
 			return TRUE;
+		}
 	}
 	return FALSE;
 }
