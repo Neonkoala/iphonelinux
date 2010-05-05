@@ -305,14 +305,13 @@ static uint32_t writeRegister(uint32_t address, uint32_t value, uint32_t mask)
 	tx[14] = (checksum >> 8) & 0xFF;
 	tx[15] = checksum & 0xFF;
 
-
 	GotATN = 0;
-
 	mt_spi_txrx(NORMAL_SPEED, tx, sizeof(tx), rx, sizeof(rx));
 
 	if(performHBPPATN_ACK() == 0x4AD1)
 		return TRUE;
-	return FALSE;
+	else
+		return FALSE;
 }
 
 static int calibrate()
@@ -341,7 +340,6 @@ static int calibrate()
 			return FALSE;
 		}
 
-//		udelay(25000);
 		if(!writeRegister(0x1000300C, 0x05, 0x85))
 		{
 			bufferPrintf("multitouch: error writing to register 0x1000300C\r\n");
