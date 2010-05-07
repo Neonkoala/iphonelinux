@@ -29,9 +29,6 @@ int globalFtlHasBeenRestored = 0; /* global variable to tell wether a ftl_restor
 static uint32_t FBWidth;
 static uint32_t FBHeight;
 
-static int ToggleUp   = 1;
-static int ToggleDown = 2;
-
 static uint32_t* imgiPhoneOS;
 static int imgiPhoneOSWidth;
 static int imgiPhoneOSHeight;
@@ -81,20 +78,12 @@ static void drawSelectionBox() {
 
 	if(Selection == MenuSelectioniPhoneOS) {
 		framebuffer_draw_image(imgiPhoneOSSelected, imgiPhoneOSX, imgiPhoneOSY, imgiPhoneOSWidth, imgiPhoneOSHeight);
-		framebuffer_draw_image(imgiDroid, imgiDroidX, imgiDroidY, imgiDroidWidth, imgiDroidHeight);
-		framebuffer_draw_image(imgConsole, imgConsoleX, imgConsoleY, imgConsoleWidth, imgConsoleHeight);
-	}
-
-	if(Selection == MenuSelectioniDroid) {
-		framebuffer_draw_image(imgiPhoneOS, imgiPhoneOSX, imgiPhoneOSY, imgiPhoneOSWidth, imgiPhoneOSHeight);
-		framebuffer_draw_image(imgiDroidSelected, imgiDroidX, imgiDroidY, imgiDroidWidth, imgiDroidHeight);
 		framebuffer_draw_image(imgConsole, imgConsoleX, imgConsoleY, imgConsoleWidth, imgConsoleHeight);
 		framebuffer_draw_image(imgAndroidOS, imgAndroidOSX, imgAndroidOSY, imgAndroidOSWidth, imgAndroidOSHeight);
 	}
 
 	if(Selection == MenuSelectionConsole) {
 		framebuffer_draw_image(imgiPhoneOS, imgiPhoneOSX, imgiPhoneOSY, imgiPhoneOSWidth, imgiPhoneOSHeight);
-		framebuffer_draw_image(imgiDroid, imgiDroidX, imgiDroidY, imgiDroidWidth, imgiDroidHeight);
 		framebuffer_draw_image(imgConsoleSelected, imgConsoleX, imgConsoleY, imgConsoleWidth, imgConsoleHeight);
 		framebuffer_draw_image(imgAndroidOS, imgAndroidOSX, imgAndroidOSY, imgAndroidOSWidth, imgAndroidOSHeight);
 	}
@@ -136,8 +125,6 @@ int menu_setup(int timeout, int defaultOS) {
 
 	imgiPhoneOS = framebuffer_load_image(dataiPhoneOSPNG, dataiPhoneOSPNG_size, &imgiPhoneOSWidth, &imgiPhoneOSHeight, TRUE);
 	imgiPhoneOSSelected = framebuffer_load_image(dataiPhoneOSSelectedPNG, dataiPhoneOSSelectedPNG_size, &imgiPhoneOSWidth, &imgiPhoneOSHeight, TRUE);
-	imgiDroid = framebuffer_load_image(dataiDroidPNG, dataiDroidPNG_size, &imgiDroidWidth, &imgiDroidHeight, TRUE);
-	imgiDroidSelected = framebuffer_load_image(dataiDroidSelectedPNG, dataiDroidSelectedPNG_size, &imgiDroidWidth, &imgiDroidHeight, TRUE);
 	imgConsole = framebuffer_load_image(dataConsolePNG, dataConsolePNG_size, &imgConsoleWidth, &imgConsoleHeight, TRUE);
 	imgConsoleSelected = framebuffer_load_image(dataConsoleSelectedPNG, dataConsoleSelectedPNG_size, &imgConsoleWidth, &imgConsoleHeight, TRUE);
 	imgAndroidOS_unblended = framebuffer_load_image(dataAndroidOSPNG, dataAndroidOSPNG_size, &imgAndroidOSWidth, &imgAndroidOSHeight, TRUE);
