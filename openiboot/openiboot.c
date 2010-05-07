@@ -38,7 +38,7 @@
 #include "scripting.h"
 
 #include "radio.h"
-#include "wm8958.h"
+#include "wmcodec.h"
 #include "wdt.h"
 #include "als.h"
 
@@ -105,6 +105,7 @@ void OpenIBootStart() {
 
 	pmu_set_iboot_stage(0);
 	startScripting("openiboot"); //start script mode if there is a file
+	bufferPrintf("version: %s\r\n", OPENIBOOT_VERSION_STR);
 	bufferPrintf("-----------------------------------------------\r\n");
 	bufferPrintf("              WELCOME TO OPENIBOOT\r\n");
 	bufferPrintf("-----------------------------------------------\r\n");
