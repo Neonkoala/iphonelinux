@@ -409,7 +409,10 @@ void cmd_saveenv(int argc, char** argv) {
 
 void cmd_install(int argc, char** argv) {
 	bufferPrintf("Installing Images...\r\n");
+	
 	images_install(&_start, (uint32_t)&OpenIBootEnd - (uint32_t)&_start);
+	nvram_setvar("opib-version", "0.1-neonkoala");
+	nvram_save();
 	bufferPrintf("Images installed\r\n");
 }
 
