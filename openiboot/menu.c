@@ -70,6 +70,27 @@ static MenuSelection Selection;
 
 volatile uint32_t* OtherFramebuffer;
 
+static void printTimeout(uint16_t timeoutLeft, uint16_t posX, uint16_t posY) {
+	volatile uint32_t* oldFB = CurFramebuffer;
+	char timeoutstr[4] = "";
+	sprintf(timeoutstr, "%d ", timeoutLeft + 1);
+        framebuffer_setloc(posX, posY);
+        framebuffer_print_force(timeoutstr);
+
+
+
+	CurFramebuffer = OtherFramebuffer;
+	currentWindow->framebuffer.buffer = CurFramebuffer;
+	OtherFramebuffer = oldFB;
+	//put code to print only here
+	if(timeoutLeft > 0){
+		framebuffer_setloc(posX, posY);
+        	framebuffer_print_force(timeoutstr);
+        	framebuffer_setloc(0,0);
+	}
+	lcd_window_address(2, (uint32_t) CurFramebuffer);
+}
+
 static void drawSelectionBox() {
 	volatile uint32_t* oldFB = CurFramebuffer;
 
@@ -194,26 +215,15 @@ int menu_setup(int timeout, int defaultOS) {
 
 	uint64_t startTime = timer_get_system_microtime();
 	int timeoutLeft = timeout / 1000;
-	int timeoutLeftb = timeout / 1000;
 	while(TRUE) {
 		if(timeout > 0){
 			if(has_elapsed(startTime, (uint64_t)(timeout - (timeoutLeft * 1000)) * 1000)){
-				char timeoutstr[5] = "";
 				timeoutLeft -= 1;
-				if(timeoutLeft != timeoutLeftb){
-					sprintf(timeoutstr, "%d ", timeoutLeft + 1);
-					framebuffer_setloc(49,47);
-					framebuffer_print_force(timeoutstr);
-					framebuffer_setloc(0,0);
-					timeoutLeftb -= 1;
-				}
 			}
+			printTimeout(timeoutLeft, 49, 47);
+
 		}   // timeout print code here ^^
-		else if(timeout == -1){
-			framebuffer_setloc(49,47);
-			framebuffer_print_force("  ");
-			framebuffer_setloc(0,0);
-		}
+
 		if(buttons_is_pushed(BUTTONS_HOLD)) {
 			toggle(TRUE);
 			startTime = timer_get_system_microtime();
