@@ -251,7 +251,7 @@ void cmd_rootfs(int argc, char** argv) {
 	bufferPrintf("set rootfs to %s on partition %d\r\n", fileName, partition);
 }
 
-void cmd_boot(int argc, char** argv) {
+void cmd_boot_linux(int argc, char** argv) {
 	char* arguments = "";
 
 	if(argc >= 2) {
@@ -409,7 +409,11 @@ void cmd_saveenv(int argc, char** argv) {
 
 void cmd_install(int argc, char** argv) {
 	bufferPrintf("Installing Images...\r\n");
+	
 	images_install(&_start, (uint32_t)&OpenIBootEnd - (uint32_t)&_start);
+	bufferPrintf("Setting NVRAM version...\r\n");
+	nvram_setvar("opib-version", "0.1");
+	nvram_save();
 	bufferPrintf("Images installed\r\n");
 }
 
@@ -1057,6 +1061,18 @@ void cmd_vibrator_off(int argc, char** argv)
 	vibrator_off();
 }
 
+void cmd_boot_iphoneos(int argc, char** argv)
+{
+	bufferPrintf("Booting iPhone OS.\r\n");
+	
+	Image* image = images_get(fourcc("ibox"));
+	if(image == NULL)
+		image = images_get(fourcc("ibot"));
+	void* imageData;
+	images_read(image, &imageData);
+	chainload((uint32_t)imageData);
+}
+
 void cmd_help(int argc, char** argv) {
 	OPIBCommand* curCommand = CommandList;
 	while(curCommand->name != NULL) {
@@ -1140,7 +1156,8 @@ OPIBCommand CommandList[] =
 		{"kernel", "load a Linux kernel", cmd_kernel},
 		{"ramdisk", "load a Linux ramdisk", cmd_ramdisk},
 		{"rootfs", "specify a file as the Linux rootfs", cmd_rootfs},
-		{"boot", "boot a Linux kernel", cmd_boot},
+		{"boot_linux", "boot a Linux kernel", cmd_boot_linux},
+		{"boot_iphoneos", "boot iphone os", cmd_boot_iphoneos},
 		{"go", "jump to a specified address (interrupts disabled)", cmd_go},
 		{"jump", "jump to a specified address (interrupts enabled)", cmd_jump},
 		{"version", "display the version string", cmd_version},

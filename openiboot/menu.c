@@ -29,7 +29,6 @@ int globalFtlHasBeenRestored = 0; /* global variable to tell wether a ftl_restor
 static uint32_t FBWidth;
 static uint32_t FBHeight;
 
-
 static uint32_t* imgiPhoneOS;
 static int imgiPhoneOSWidth;
 static int imgiPhoneOSHeight;
@@ -178,7 +177,6 @@ int menu_setup(int timeout, int defaultOS) {
 	framebuffer_setcolors(COLOR_WHITE, COLOR_BLACK);
 	framebuffer_setloc(0, 0);
 
-
 	switch(defaultOS){
 		case 0:
 			Selection = MenuSelectioniPhoneOS;
@@ -187,12 +185,12 @@ int menu_setup(int timeout, int defaultOS) {
 			Selection = MenuSelectionConsole;
 			break;
 		case 2:
-			Selection = MenuSelectionConsole;
+			Selection = MenuSelectionAndroid;
 			break;
 		default:
 			Selection = MenuSelectioniPhoneOS;
-			break;
 	}
+
 	imgAndroidOS = malloc(imgAndroidOSWidth * imgAndroidOSHeight * sizeof(uint32_t));
 	imgAndroidOSSelected = malloc(imgAndroidOSWidth * imgAndroidOSHeight * sizeof(uint32_t));
 
@@ -201,8 +199,6 @@ int menu_setup(int timeout, int defaultOS) {
 
 	framebuffer_blend_image(imgAndroidOS, imgAndroidOSWidth, imgAndroidOSHeight, imgAndroidOS_unblended, imgAndroidOSWidth, imgAndroidOSHeight, 0, 0);
 	framebuffer_blend_image(imgAndroidOSSelected, imgAndroidOSWidth, imgAndroidOSHeight, imgAndroidOSSelected_unblended, imgAndroidOSWidth, imgAndroidOSHeight, 0, 0);
-
-	Selection = MenuSelectioniPhoneOS;
 
 	OtherFramebuffer = CurFramebuffer;
 	CurFramebuffer = (volatile uint32_t*) NextFramebuffer;
@@ -220,10 +216,11 @@ int menu_setup(int timeout, int defaultOS) {
 			if(has_elapsed(startTime, (uint64_t)(timeout - (timeoutLeft * 1000)) * 1000)){
 				timeoutLeft -= 1;
 			}
-			printTimeout(timeoutLeft, 49, 47);
+//			printTimeout(timeoutLeft, 49, 47);
 
 		}   // timeout print code here ^^
-
+		if(timeout != -1)
+			printTimeout(timeoutLeft, 49, 47);
 		if(buttons_is_pushed(BUTTONS_HOLD)) {
 			toggle(TRUE);
 			startTime = timer_get_system_microtime();
@@ -276,7 +273,6 @@ int menu_setup(int timeout, int defaultOS) {
 			currentWindow->framebuffer.buffer = CurFramebuffer;
 			lcd_window_address(2, (uint32_t) CurFramebuffer);
 		}
-
 		framebuffer_setdisplaytext(TRUE);
 		framebuffer_clear();
 	}
