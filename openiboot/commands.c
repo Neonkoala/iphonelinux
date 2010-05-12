@@ -418,6 +418,7 @@ void cmd_install(int argc, char** argv) {
 }
 
 void cmd_uninstall(int argc, char** argv) {
+	nvram_setvar("opib-version", "");
 	images_uninstall();
 }
 
