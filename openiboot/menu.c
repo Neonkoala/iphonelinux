@@ -161,7 +161,7 @@ int menu_setup(int timeout, int defaultOS) {
 			Selection = MenuSelectioniPhoneOS;
 			break;
 		case 1:
-			Selection = MenuSelectionConsole;
+			Selection = MenuSelectionAndroidOS;
 			break;
 		case 2:
 			Selection = MenuSelectionConsole;
