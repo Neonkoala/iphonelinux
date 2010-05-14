@@ -780,6 +780,7 @@ void cmd_accel(int argc, char** argv) {
 	bufferPrintf("x: %d, y: %d, z: %d\r\n", x, y, z);
 }
 
+#ifndef CONFIG_IPOD
 void cmd_als(int argc, char** argv) {
 	bufferPrintf("data = %d\r\n", als_data());
 }
@@ -805,6 +806,7 @@ void cmd_als_dis(int argc, char** argv) {
 	bufferPrintf("Disabling ALS interrupt.\r\n");
 	als_disable_interrupt();
 }
+#endif
 
 void cmd_sdio_status(int argc, char** argv) {
 	sdio_status();
@@ -888,6 +890,7 @@ void cmd_audiohw_headphone_vol(int argc, char** argv)
 	bufferPrintf("Set headphone volumes to: %d / %d\r\n", left, right);
 }
 
+#ifndef CONFIG_IPOD
 void cmd_audiohw_speaker_vol(int argc, char** argv)
 {
 	if(argc < 2)
@@ -919,22 +922,9 @@ void cmd_audiohw_speaker_vol(int argc, char** argv)
 	}
 #endif
 }
+#endif
 
-#ifdef CONFIG_3G
-void cmd_multitouch_setup(int argc, char** argv)
-{
-	if(argc < 3)
-	{
-		bufferPrintf("%s <constructed fw> <constructed fw len>\r\n", argv[0]);
-		return;
-	}
-
-	uint8_t* constructedFW = (uint8_t*) parseNumber(argv[1]);
-	uint32_t constructedFWLen = parseNumber(argv[2]);
-
-	multitouch_setup(constructedFW, constructedFWLen);
-}
-#else
+#ifdef CONFIG_IPHONE
 void cmd_multitouch_setup(int argc, char** argv)
 {
 	if(argc < 5)
@@ -949,6 +939,20 @@ void cmd_multitouch_setup(int argc, char** argv)
 	uint32_t mainFWLen = parseNumber(argv[4]);
 
 	multitouch_setup(aspeedFW, aspeedFWLen, mainFW, mainFWLen);
+}
+#else
+void cmd_multitouch_setup(int argc, char** argv)
+{
+	if(argc < 3)
+	{
+		bufferPrintf("%s <constructed fw> <constructed fw len>\r\n", argv[0]);
+		return;
+	}
+
+	uint8_t* constructedFW = (uint8_t*) parseNumber(argv[1]);
+	uint32_t constructedFWLen = parseNumber(argv[2]);
+
+	multitouch_setup(constructedFW, constructedFWLen);
 }
 #endif
 
@@ -976,6 +980,7 @@ void cmd_wlan_prog_real(int argc, char** argv) {
 	wlan_prog_real((void*) address, len);
 }
 
+#ifndef CONFIG_IPOD
 void cmd_radio_send(int argc, char** argv) {
 	if(argc < 2) {
 		bufferPrintf("Usage: %s <command>\r\n", argv[0]);
@@ -1060,6 +1065,7 @@ void cmd_vibrator_off(int argc, char** argv)
 
 	vibrator_off();
 }
+#endif
 
 void cmd_boot_iphoneos(int argc, char** argv)
 {
@@ -1124,14 +1130,17 @@ OPIBCommand CommandList[] =
 		{"iic_read", "read a IIC register", cmd_iic_read},
 		{"iic_write", "write a IIC register", cmd_iic_write},
 		{"accel", "display accelerometer data", cmd_accel},
+#ifndef CONFIG_IPOD
 		{"als", "display ambient light sensor data", cmd_als},
 		{"als_channel", "set channel to get ALS data from", cmd_als_channel},
 		{"als_en", "enable continuous reporting of ALS data", cmd_als_en},
 		{"als_dis", "disable continuous reporting of ALS data", cmd_als_dis},
+#endif
 		{"sdio_status", "display sdio registers", cmd_sdio_status},
 		{"sdio_setup", "restart SDIO stuff", cmd_sdio_setup},
 		{"wlan_prog_helper", "program wlan fw helper", cmd_wlan_prog_helper},
 		{"wlan_prog_real", "program wlan fw", cmd_wlan_prog_real},
+#ifndef CONFIG_IPOD
 		{"radio_send", "send a command to the baseband", cmd_radio_send},
 		{"radio_nvram_list", "list entries in baseband NVRAM", cmd_radio_nvram_list},
 		{"radio_register", "register with a cellular network", cmd_radio_register},
@@ -1140,6 +1149,7 @@ OPIBCommand CommandList[] =
 		{"vibrator_loop", "turn the vibrator on in a loop", cmd_vibrator_loop},
 		{"vibrator_once", "vibrate once", cmd_vibrator_once},
 		{"vibrator_off", "turn the vibrator off", cmd_vibrator_off},
+#endif
 		{"images_list", "list the images available on NOR", cmd_images_list},
 		{"images_read", "read an image on NOR", cmd_images_read},
 		{"pmu_voltage", "get the battery voltage", cmd_pmu_voltage},
@@ -1166,7 +1176,9 @@ OPIBCommand CommandList[] =
 		{"audiohw_transfers_done", "display how many times the audio buffer has been played", cmd_audiohw_transfers_done},
 		{"audiohw_play_pcm", "queue some PCM data for playback", cmd_audiohw_play_pcm},
 		{"audiohw_headphone_vol", "set the headphone volume", cmd_audiohw_headphone_vol},
+#ifndef CONFIG_IPOD
 		{"audiohw_speaker_vol", "set the speaker volume", cmd_audiohw_speaker_vol},
+#endif
 		{"audiohw_position", "print the playback position", cmd_audiohw_position},
 		{"audiohw_pause", "pause playback", cmd_audiohw_pause},
 		{"audiohw_resume", "resume playback", cmd_audiohw_resume},
