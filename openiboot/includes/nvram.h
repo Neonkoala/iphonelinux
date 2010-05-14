@@ -31,10 +31,10 @@ typedef struct EnvironmentVar {
 	struct EnvironmentVar* next;
 } EnvironmentVar;
 
-int nvram_setup();
+int nvram_setup(int quiet);
 void nvram_listvars();
 const char* nvram_getvar(const char* name);
 void nvram_setvar(const char* name, const char* value);
-void nvram_save();
+void nvram_save(int quiet);
 
 #endif

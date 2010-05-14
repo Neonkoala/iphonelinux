@@ -43,7 +43,6 @@
 #include "als.h"
 
 int received_file_size;
-int autoBoot;
 
 static int setup_devices();
 static int setup_openiboot();
@@ -79,18 +78,29 @@ void OpenIBootStart() {
 		framebuffer_setdisplaytext(FALSE);
 		const char* sMenuTimeout = nvram_getvar("opib-menu-timeout");
 		const char* sDefaultOS = nvram_getvar("opib-default-os");
+		const char* sTempOS = nvram_getvar("opib-temp-os");
 		const char* sAutoBoot = nvram_getvar("opib-auto-boot");
 		int defaultOS = 0;
+		int tempOS = 0;
+		int autoBoot = 0;
+		int menuTimeout = -1;
 		if(sDefaultOS)
 			defaultOS = parseNumber(sDefaultOS);
-		int menuTimeout = -1;
-		if(sAutoBoot)
-			autoBoot = parseNumber(sAutoBoot);
 		if(sMenuTimeout)
 			menuTimeout = parseNumber(sMenuTimeout);
+		if(sTempOS)
+			tempOS = parseNumber(sTempOS);
+		if(tempOS!=defaultOS) {
+			nvram_setvar("opib-temp-os",sDefaultOS);
+			nvram_save(1);
+			defaultOS = tempOS;
+			menuTimeout = 1;
+		}
+		if(sAutoBoot)
+			autoBoot = parseNumber(sAutoBoot);
 		if(autoBoot==0)
 			menuTimeout = 0;
-		menu_setup(menuTimeout, defaultOS);
+		menu_setup(menuTimeout, defaultOS, tempOS);
 	}
 #endif
 #endif
@@ -409,7 +419,7 @@ static int setup_openiboot() {
 	nor_setup();
 	syscfg_setup();
 	images_setup();
-	nvram_setup();
+	nvram_setup(0);
 
 	lcd_setup();
 	framebuffer_setup();

@@ -101,7 +101,7 @@ static void releaseEnvironment(EnvironmentVar* vars) {
 	}
 }
 
-void nvram_save() {
+void nvram_save(int quiet) {
 	NVRamAtom* commonAtom = findAtom(newestBank, "common");
 	EnvironmentVar* var = variables;
 	memset(commonAtom->data, 0, commonAtom->size - sizeof(NVRamInfo));
@@ -139,7 +139,7 @@ void nvram_save() {
 	free(bank1Data);
 	free(bank2Data);
 
-	nvram_setup();
+	nvram_setup(quiet);
 }
 
 const char* nvram_getvar(const char* name) {
@@ -231,7 +231,7 @@ static EnvironmentVar* loadEnvironment(NVRamAtom* atoms) {
 	return toRet;
 }
 
-int nvram_setup() {
+int nvram_setup(int quiet) {
 	bank1Data = (uint8_t*) malloc(NVRAM_SIZE);
 	bank2Data = (uint8_t*) malloc(NVRAM_SIZE);
 	nor_read(bank1Data, NVRAM_START, NVRAM_SIZE);	
@@ -240,17 +240,19 @@ int nvram_setup() {
 	bank1Atoms = readAtoms(bank1Data);
 	bank2Atoms = readAtoms(bank2Data);
 
-	if(bank1Atoms) {
-		bufferPrintf("Successfully loaded bank1 nvram\r\n");
-	}
-
-	if(bank2Atoms) {
-		bufferPrintf("Successfully loaded bank2 nvram\r\n");
-	}
-
-	if(!bank1Atoms && !bank2Atoms) {
-		bufferPrintf("Could not load either bank1 nor bank2 nvram!\r\n");
-		return -1;
+	if(quiet==0) {
+		if(bank1Atoms) {
+			bufferPrintf("Successfully loaded bank1 nvram\r\n");
+		}
+	
+		if(bank2Atoms) {
+			bufferPrintf("Successfully loaded bank2 nvram\r\n");
+		}
+	
+		if(!bank1Atoms && !bank2Atoms) {
+			bufferPrintf("Could not load either bank1 nor bank2 nvram!\r\n");
+			return -1;
+		}
 	}
 
 	NVRamAtom* ckDataAtom1 = findAtom(bank1Atoms, "nvram");

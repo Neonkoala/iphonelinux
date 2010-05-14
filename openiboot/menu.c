@@ -7,6 +7,7 @@
 #include "framebuffer.h"
 #include "buttons.h"
 #include "timer.h"
+#include "nvram.h"
 #include "images/ConsolePNG.h"
 #include "images/iPhoneOSPNG.h"
 #include "images/AndroidOSPNG.h"
@@ -119,7 +120,7 @@ static void toggle(int forward) {
 	drawSelectionBox();
 }
 
-int menu_setup(int timeout, int defaultOS) {
+int menu_setup(int timeout, int defaultOS, int tempOS) {
 	FBWidth = currentWindow->framebuffer.width;
 	FBHeight = currentWindow->framebuffer.height;	
 
@@ -155,7 +156,7 @@ int menu_setup(int timeout, int defaultOS) {
 	framebuffer_print_force(OPENIBOOT_VERSION_STR);
 	framebuffer_setcolors(COLOR_WHITE, COLOR_BLACK);
 	framebuffer_setloc(0, 0);
-
+	
 	switch(defaultOS){
 		case 0:
 			Selection = MenuSelectioniPhoneOS;

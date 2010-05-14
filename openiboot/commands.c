@@ -403,17 +403,16 @@ void cmd_setenv(int argc, char** argv) {
 
 void cmd_saveenv(int argc, char** argv) {
 	bufferPrintf("Saving environment, this may take awhile...\r\n");
-	nvram_save();
+	nvram_save(0);
 	bufferPrintf("Environment saved\r\n");
 }
 
 void cmd_install(int argc, char** argv) {
 	bufferPrintf("Installing Images...\r\n");
-	
 	images_install(&_start, (uint32_t)&OpenIBootEnd - (uint32_t)&_start);
 	bufferPrintf("Setting NVRAM version...\r\n");
 	nvram_setvar("opib-version", "0.1");
-	nvram_save();
+	nvram_save(1);
 	bufferPrintf("Images installed\r\n");
 }
 
