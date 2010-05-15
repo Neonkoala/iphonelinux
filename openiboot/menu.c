@@ -120,7 +120,35 @@ static void toggle(int forward) {
 	drawSelectionBox();
 }
 
-int menu_setup(int timeout, int defaultOS, int tempOS) {
+void menuBootLinux() {
+	framebuffer_setdisplaytext(TRUE);
+	framebuffer_clear();
+
+#ifndef NO_HFS
+#ifndef CONFIG_IPOD
+	radio_setup();
+#endif
+	nand_setup();
+	fs_setup();
+	if(globalFtlHasBeenRestored) /* if ftl has been restored, sync it, so kernel doesn't have to do a ftl_restore again */
+	{
+		if(ftl_sync())
+		{
+			bufferPrintf("ftl synced successfully");
+		}
+		else
+		{
+			bufferPrintf("error syncing ftl");
+		}
+	}
+
+	pmu_set_iboot_stage(0);
+	startScripting("linux"); //start script mode if there is a script file
+	boot_linux_from_files();
+#endif
+}
+
+int menu_setup(int timeout, int defaultOS) {
 	FBWidth = currentWindow->framebuffer.width;
 	FBHeight = currentWindow->framebuffer.height;	
 
@@ -277,31 +305,7 @@ int menu_setup(int timeout, int defaultOS, int tempOS) {
 			lcd_window_address(2, (uint32_t) CurFramebuffer);
 		}
 
-		framebuffer_setdisplaytext(TRUE);
-		framebuffer_clear();
-
-#ifndef NO_HFS
-#ifndef CONFIG_IPOD
-		radio_setup();
-#endif
-		nand_setup();
-		fs_setup();
-		if(globalFtlHasBeenRestored) /* if ftl has been restored, sync it, so kernel doesn't have to do a ftl_restore again */
-		{
-			if(ftl_sync())
-			{
-				bufferPrintf("ftl synced successfully");
-			}
-			else
-			{
-				bufferPrintf("error syncing ftl");
-			}
-		}
-
-		pmu_set_iboot_stage(0);
-		startScripting("linux"); //start script mode if there is a script file
-		boot_linux_from_files();
-#endif
+		menuBootLinux();
 	}
 
 	return 0;
@@ -309,3 +313,4 @@ int menu_setup(int timeout, int defaultOS, int tempOS) {
 
 #endif
 #endif
+

@@ -3,6 +3,7 @@
 
 #include "openiboot.h"
 
-int menu_setup(int timeout, int defaultOS, int tempOS);
+int menu_setup(int timeout, int defaultOS);
+void menuBootLinux();
 
 #endif

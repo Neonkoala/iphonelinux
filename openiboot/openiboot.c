@@ -36,6 +36,7 @@
 #include "hfs/bdev.h"
 #include "hfs/fs.h"
 #include "scripting.h"
+#include "actions.h"
 
 #include "radio.h"
 #include "wmcodec.h"
@@ -71,36 +72,45 @@ void OpenIBootStart() {
 
 #ifndef SMALL
 #ifndef NO_STBIMAGE
+	int defaultOS = 0;
+	int tempOS = 0;
 	const char* hideMenu = nvram_getvar("opib-hide-menu");
-	if(hideMenu && (strcmp(hideMenu, "1") == 0 || strcmp(hideMenu, "true") == 0)) {
+	const char* sDefaultOS = nvram_getvar("opib-default-os");
+	const char* sTempOS = nvram_getvar("opib-temp-os");
+	if(sDefaultOS)
+		defaultOS = parseNumber(sDefaultOS);
+	if(sTempOS)
+		tempOS = parseNumber(sTempOS);
+	if(tempOS!=defaultOS) {
+		nvram_setvar("opib-temp-os",sDefaultOS);
+		nvram_save(1);
+		if(tempOS==0) {
+			Image* image = images_get(fourcc("ibox"));
+			if(image == NULL)
+				image = images_get(fourcc("ibot"));
+			void* imageData;
+			images_read(image, &imageData);
+			chainload((uint32_t)imageData);
+		} else if(tempOS==1) {
+			menuBootLinux();
+		} else if(tempOS==2) {
+			hideMenu = "1";
+		}
+	} else if(hideMenu && (strcmp(hideMenu, "1") == 0 || strcmp(hideMenu, "true") == 0)) {
 		bufferPrintf("Boot menu hidden. Use 'setenv opib-hide-menu false' and then 'saveenv' to unhide.\r\n");
 	} else {
 		framebuffer_setdisplaytext(FALSE);
 		const char* sMenuTimeout = nvram_getvar("opib-menu-timeout");
-		const char* sDefaultOS = nvram_getvar("opib-default-os");
-		const char* sTempOS = nvram_getvar("opib-temp-os");
 		const char* sAutoBoot = nvram_getvar("opib-auto-boot");
-		int defaultOS = 0;
-		int tempOS = 0;
 		int autoBoot = 0;
 		int menuTimeout = -1;
-		if(sDefaultOS)
-			defaultOS = parseNumber(sDefaultOS);
 		if(sMenuTimeout)
 			menuTimeout = parseNumber(sMenuTimeout);
-		if(sTempOS)
-			tempOS = parseNumber(sTempOS);
-		if(tempOS!=defaultOS) {
-			nvram_setvar("opib-temp-os",sDefaultOS);
-			nvram_save(1);
-			defaultOS = tempOS;
-			menuTimeout = 1;
-		}
 		if(sAutoBoot)
 			autoBoot = parseNumber(sAutoBoot);
 		if(autoBoot==0)
 			menuTimeout = 0;
-		menu_setup(menuTimeout, defaultOS, tempOS);
+		menu_setup(menuTimeout, defaultOS);
 	}
 #endif
 #endif
