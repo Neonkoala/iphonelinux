@@ -412,7 +412,7 @@ void cmd_install(int argc, char** argv) {
 	bufferPrintf("Installing Images...\r\n");
 	images_install(&_start, (uint32_t)&OpenIBootEnd - (uint32_t)&_start);
 	bufferPrintf("Setting NVRAM version...\r\n");
-	nvram_setvar("opib-version", "0.1");
+	nvram_setvar("opib-version", "0.1.1");
 	nvram_save(1);
 	bufferPrintf("Images installed\r\n");
 }
