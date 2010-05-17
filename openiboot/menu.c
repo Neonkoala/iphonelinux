@@ -69,26 +69,6 @@ static MenuSelection Selection;
 
 volatile uint32_t* OtherFramebuffer;
 
-static void printTimeout(uint16_t timeoutLeft, uint16_t posX, uint16_t posY) {
-	volatile uint32_t* oldFB = CurFramebuffer;
-	char timeoutstr[4] = "";
-	sprintf(timeoutstr, "%d ", timeoutLeft + 1);
-        framebuffer_setloc(posX, posY);
-        framebuffer_print_force(timeoutstr);
-
-
-
-	CurFramebuffer = OtherFramebuffer;
-	currentWindow->framebuffer.buffer = CurFramebuffer;
-	OtherFramebuffer = oldFB;
-	//put code to print only here
-	if(timeoutLeft > 0){
-		framebuffer_setloc(posX, posY);
-        	framebuffer_print_force(timeoutstr);
-        	framebuffer_setloc(0,0);
-	}
-	lcd_window_address(2, (uint32_t) CurFramebuffer);
-}
 
 static void drawSelectionBox() {
 	volatile uint32_t* oldFB = CurFramebuffer;
@@ -185,7 +165,7 @@ int menu_setup(int timeout, int defaultOS) {
 			Selection = MenuSelectionConsole;
 			break;
 		case 2:
-			Selection = MenuSelectionAndroid;
+			Selection = MenuSelectionAndroidOS;
 			break;
 		default:
 			Selection = MenuSelectioniPhoneOS;
@@ -211,16 +191,27 @@ int menu_setup(int timeout, int defaultOS) {
 
 	uint64_t startTime = timer_get_system_microtime();
 	int timeoutLeft = timeout / 1000;
+	drawSelectionBox();
 	while(TRUE) {
-		if(timeout > 0){
+		char timeoutstr[4] = "";
+		if(timeout >= 0){
 			if(has_elapsed(startTime, (uint64_t)(timeout - (timeoutLeft * 1000)) * 1000)){
 				timeoutLeft -= 1;
 			}
-//			printTimeout(timeoutLeft, 49, 47);
+			sprintf(timeoutstr, "%d", timeoutLeft);
+			framebuffer_setloc(49, 47);
+			framebuffer_print_force(timeoutstr);
+			framebuffer_setloc(0,0);
 
 		}   // timeout print code here ^^
-		if(timeout != -1)
-			printTimeout(timeoutLeft, 49, 47);
+		else if(timeout == -1){
+			timeoutLeft = -1;
+			sprintf(timeoutstr, "  ");
+			framebuffer_setloc(49, 47);
+			framebuffer_print_force(timeoutstr);
+			framebuffer_setloc(0,0);
+		}
+
 		if(buttons_is_pushed(BUTTONS_HOLD)) {
 			toggle(TRUE);
 			startTime = timer_get_system_microtime();
@@ -233,20 +224,17 @@ int menu_setup(int timeout, int defaultOS) {
 			toggle(FALSE);
 			startTime = timer_get_system_microtime();
 			timeout = -1;
-			defaultOS = -1;
-			udelay(200000);
+		udelay(200000);
 		}
 		if(!buttons_is_pushed(BUTTONS_VOLDOWN)) {
 			toggle(TRUE);
 			startTime = timer_get_system_microtime();
 			timeout = -1;
-			defaultOS = -1;
 			udelay(200000);
 		}
 #endif
 		if(buttons_is_pushed(BUTTONS_HOME)) {
 			timeout = -1;
-			defaultOS = -1;
 			break;
 		}
 		if(timeout > 0 && has_elapsed(startTime, (uint64_t)timeout * 1000)) {
