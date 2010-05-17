@@ -222,11 +222,15 @@ static void setup_wifi_tags()
 	uint32_t calSize;
 	uint8_t* cal;
 
+#ifdef CONFIG_IPOD
+	return;
+#else
 	if(radio_nvram_get(2, &mac) < 0)
 		return;
 
 	if((calSize = radio_nvram_get(1, &cal)) < 0)
 		return;
+#endif
 
 	memcpy(&params->u.wifi.mac, mac, 6);
 	params->u.wifi.calSize = calSize;
@@ -237,23 +241,14 @@ static void setup_wifi_tags()
 	params = tag_next(params);              /* move pointer to next tag */
 }
 
-static void setup_mt_tags()
+static void setup_prox_tag()
 {
-#ifndef CONFIG_IPHONE
+#ifdef CONFIG_3G
 	uint8_t* prox_cal;
 	int prox_cal_size;
 
-	uint8_t* cal;
-	int cal_size;
-
 	prox_cal = syscfg_get_entry(SCFG_PxCl, &prox_cal_size);
 	if(!prox_cal)
-	{
-		return;
-	}
-
-	cal = syscfg_get_entry(SCFG_MtCl, &cal_size);
-	if(!cal)
 	{
 		return;
 	}
@@ -264,6 +259,22 @@ static void setup_mt_tags()
 	params->hdr.tag = ATAG_IPHONE_PROX_CAL;
 	params->hdr.size = (sizeof(struct atag_header) + sizeof(struct atag_iphone_cal_data) + prox_cal_size + 4) >> 2;
 	params = tag_next(params);              /* move pointer to next tag */
+
+	bufferPrintf("Proximity calibration data installed.\r\n");
+#endif
+}
+
+static void setup_mt_tag()
+{
+#ifndef CONFIG_IPHONE
+	uint8_t* cal;
+	int cal_size;
+
+	cal = syscfg_get_entry(SCFG_MtCl, &cal_size);
+	if(!cal)
+	{
+		return;
+	}
 
 	params->u.mt_cal.size = cal_size;
 	memcpy(params->u.mt_cal.data, cal, cal_size);
@@ -358,7 +369,8 @@ static void setup_tags(struct atag* parameters, const char* commandLine)
 		setup_initrd2_tag(INITRD_LOAD, ramdiskSize);
 	}
 	setup_cmdline_tag(commandLine);
-	setup_mt_tags();
+	setup_prox_tag();
+	setup_mt_tag();
 	setup_wifi_tags();
 #ifndef NO_HFS
 	setup_iphone_nand_tag();
