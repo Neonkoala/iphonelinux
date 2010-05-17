@@ -991,17 +991,19 @@ void cmd_radio_send(int argc, char** argv) {
 	radio_write(argv[1]);
 	radio_write("\r\n");
 	
-	char buf[100];
-	int c = radio_read(buf, sizeof(buf));
+	char* buf = malloc(0x1000);
+	int c = radio_read(buf, 0x1000);
 	printf("radio reply: %s", buf);
 
-	while(c == (sizeof(buf) - 1))
+	while(c == (0x1000 - 1))
 	{
-		c = radio_read(buf, sizeof(buf));
+		c = radio_read(buf, 0x1000);
 		printf("%s", buf);
 	}
 
 	printf("\n");
+
+	free(buf);
 }
 
 void cmd_radio_nvram_list(int argc, char** argv) {
@@ -1098,6 +1100,20 @@ void cmd_piezo_buzz(int argc, char** argv) {
 	piezo_buzz(frequency, duration);
 
 	bufferPrintf("%d hz for %u microseconds: done.\r\n", frequency, duration);
+}
+
+void cmd_piezo_play(int argc, char** argv) {
+	if(argc < 2) {
+		bufferPrintf("Usage: %s <frequency in hertz> [duration in milliseconds]\r\n", argv[0]);
+		return;
+	}
+
+	bufferPrintf("playing string \"%s\"\r\n", argv[1]);
+
+	piezo_play(argv[1]);
+
+	bufferPrintf("done\r\n");
+
 }
 
 #endif
@@ -1207,6 +1223,7 @@ OPIBCommand CommandList[] =
 		{"audiohw_resume", "resume playback", cmd_audiohw_resume},
 #ifdef CONFIG_IPOD
 		{"buzz", "use the piezo buzzer", cmd_piezo_buzz},
+		{"play", "play notes using piezo bytes", cmd_piezo_play},
 #endif
 		{"multitouch_setup", "setup the multitouch chip", cmd_multitouch_setup},
 		{"help", "list the available commands", cmd_help},

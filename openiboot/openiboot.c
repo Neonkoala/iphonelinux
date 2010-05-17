@@ -101,15 +101,9 @@ void OpenIBootStart() {
 	} else {
 		framebuffer_setdisplaytext(FALSE);
 		const char* sMenuTimeout = nvram_getvar("opib-menu-timeout");
-		const char* sAutoBoot = nvram_getvar("opib-auto-boot");
-		int autoBoot = 0;
 		int menuTimeout = -1;
 		if(sMenuTimeout)
 			menuTimeout = parseNumber(sMenuTimeout);
-		if(sAutoBoot)
-			autoBoot = parseNumber(sAutoBoot);
-		if(autoBoot==0)
-			menuTimeout = 0;
 		menu_setup(menuTimeout, defaultOS);
 	}
 #endif

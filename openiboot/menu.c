@@ -70,6 +70,7 @@ static MenuSelection Selection;
 
 volatile uint32_t* OtherFramebuffer;
 
+
 static void drawSelectionBox() {
 	volatile uint32_t* oldFB = CurFramebuffer;
 
@@ -193,7 +194,7 @@ int menu_setup(int timeout, int defaultOS) {
 			Selection = MenuSelectionAndroidOS;
 			break;
 		case 2:
-			Selection = MenuSelectionConsole;
+			Selection = MenuSelectionAndroidOS;
 			break;
 		default:
 			Selection = MenuSelectioniPhoneOS;
@@ -219,27 +220,27 @@ int menu_setup(int timeout, int defaultOS) {
 
 	uint64_t startTime = timer_get_system_microtime();
 	int timeoutLeft = timeout / 1000;
-	int timeoutLeftb = timeout / 1000;
-
+	drawSelectionBox();
 	while(TRUE) {
-		if(timeout > 0){
+		char timeoutstr[4] = "";
+		if(timeout >= 0){
 			if(has_elapsed(startTime, (uint64_t)(timeout - (timeoutLeft * 1000)) * 1000)){
-				char timeoutstr[5] = "";
 				timeoutLeft -= 1;
-				if(timeoutLeft != timeoutLeftb){
-					sprintf(timeoutstr, "%d ", timeoutLeft + 1);
-					framebuffer_setloc(49,47);
-					framebuffer_print_force(timeoutstr);
-					framebuffer_setloc(0,0);
-					timeoutLeftb -= 1;
-				}
 			}
+			sprintf(timeoutstr, "%d", timeoutLeft);
+			framebuffer_setloc(49, 47);
+			framebuffer_print_force(timeoutstr);
+			framebuffer_setloc(0,0);
+
 		}   // timeout print code here ^^
 		else if(timeout == -1){
-			framebuffer_setloc(49,47);
-			framebuffer_print_force("  ");
+			timeoutLeft = -1;
+			sprintf(timeoutstr, "  ");
+			framebuffer_setloc(49, 47);
+			framebuffer_print_force(timeoutstr);
 			framebuffer_setloc(0,0);
 		}
+
 		if(buttons_is_pushed(BUTTONS_HOLD)) {
 			toggle(TRUE);
 			startTime = timer_get_system_microtime();
@@ -252,20 +253,17 @@ int menu_setup(int timeout, int defaultOS) {
 			toggle(FALSE);
 			startTime = timer_get_system_microtime();
 			timeout = -1;
-			defaultOS = -1;
-			udelay(200000);
+		udelay(200000);
 		}
 		if(!buttons_is_pushed(BUTTONS_VOLDOWN)) {
 			toggle(TRUE);
 			startTime = timer_get_system_microtime();
 			timeout = -1;
-			defaultOS = -1;
 			udelay(200000);
 		}
 #endif
 		if(buttons_is_pushed(BUTTONS_HOME)) {
 			timeout = -1;
-			defaultOS = -1;
 			break;
 		}
 		if(timeout > 0 && has_elapsed(startTime, (uint64_t)timeout * 1000)) {
