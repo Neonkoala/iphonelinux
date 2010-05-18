@@ -194,7 +194,7 @@ int menu_setup(int timeout, int defaultOS) {
 			Selection = MenuSelectionAndroidOS;
 			break;
 		case 2:
-			Selection = MenuSelectionAndroidOS;
+			Selection = MenuSelectionConsole;
 			break;
 		default:
 			Selection = MenuSelectioniPhoneOS;
@@ -219,15 +219,15 @@ int menu_setup(int timeout, int defaultOS) {
 	memcpy((void*)NextFramebuffer, (void*) CurFramebuffer, NextFramebuffer - (uint32_t)CurFramebuffer);
 
 	uint64_t startTime = timer_get_system_microtime();
-	int timeoutLeft = timeout / 1000;
+	int timeoutLeft = (timeout / 1000);
 	drawSelectionBox();
 	while(TRUE) {
 		char timeoutstr[4] = "";
 		if(timeout >= 0){
+			sprintf(timeoutstr, "%d", timeoutLeft);
 			if(has_elapsed(startTime, (uint64_t)(timeout - (timeoutLeft * 1000)) * 1000)){
 				timeoutLeft -= 1;
 			}
-			sprintf(timeoutstr, "%d", timeoutLeft);
 			framebuffer_setloc(49, 47);
 			framebuffer_print_force(timeoutstr);
 			framebuffer_setloc(0,0);
