@@ -6,6 +6,7 @@
 // Constants
 #define EventTimer 4
 #define PiezoTimer 1
+#define VibratorTimer 5
 
 // Devices
 
