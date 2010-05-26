@@ -224,6 +224,12 @@ int menu_setup(int timeout, int defaultOS) {
 	while(TRUE) {
 		char timeoutstr[4] = "";
 		if(timeout >= 0){
+			if(timeoutLeft == 9){
+				sprintf(timeoutstr, "  ");
+				framebuffer_setloc(49, 47);
+				framebuffer_print_force(timeoutstr);
+				framebuffer_setloc(0,0);
+			}
 			sprintf(timeoutstr, "%d", timeoutLeft);
 			if(has_elapsed(startTime, (uint64_t)(timeout - (timeoutLeft * 1000)) * 1000)){
 				timeoutLeft -= 1;
@@ -231,9 +237,7 @@ int menu_setup(int timeout, int defaultOS) {
 			framebuffer_setloc(49, 47);
 			framebuffer_print_force(timeoutstr);
 			framebuffer_setloc(0,0);
-
-		}   // timeout print code here ^^
-		else if(timeout == -1){
+		} else if(timeout == -1) {
 			timeoutLeft = -1;
 			sprintf(timeoutstr, "  ");
 			framebuffer_setloc(49, 47);
