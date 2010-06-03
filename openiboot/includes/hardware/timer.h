@@ -5,8 +5,12 @@
 
 // Constants
 #define EventTimer 4
+#ifdef CONFIG_IPOD
 #define PiezoTimer 1
+#endif
+#ifdef CONFIG_3G
 #define VibratorTimer 5
+#endif
 
 // Devices
 

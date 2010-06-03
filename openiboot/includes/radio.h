@@ -8,10 +8,6 @@ int radio_cmd(const char* cmd, int tries);
 
 void radio_nvram_list();
 
-void vibrator_loop(int frequency, int period, int timeOn);
-void vibrator_once(int frequency, int time);
-void vibrator_off();
-
 int speaker_setup();
 void loudspeaker_vol(int vol);
 void speaker_vol(int vol);
