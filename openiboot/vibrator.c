@@ -64,7 +64,7 @@ void vibrator_loop(int frequency, int period, int time)
 
 		uint32_t countOn = (count * (100 - period))/100;
 
-		timer_init(VibratorTimer, countOn, count, prescaler - 1, 0, FALSE, FALSE, FALSE, FALSE);
+		timer_init(VibratorTimer, countOn, count, prescaler - 1, 0, FALSE, FALSE, FALSE, FALSE, FALSE);
 		timer_on_off(VibratorTimer, ON);
 	}
 
@@ -75,18 +75,32 @@ void vibrator_loop(int frequency, int period, int time)
 }
 
 void vibrator_once(int time) {
-	// init the timer
-	timer_init(VibratorTimer, 0, 1, 0, 0, FALSE, FALSE, FALSE, FALSE);
+	if (time == 0)
+		return;
+	uint32_t count = time * (TicksPerSec/1000000);
+	while(1) {
+		uint32_t countRun = count;
+		if (count > TicksPerSec)
+			countRun = TicksPerSec;	
+		int prescaler = 1;
+		while(countRun > 0xFFFF)
+		{
+			countRun >>= 1;
+			prescaler <<= 1;
+		}
 
-	// turn timer on, wait, turn it off
-	timer_on_off(VibratorTimer, ON);
-	udelay(time);
-	vibrator_off();
+		timer_init(VibratorTimer, 0, countRun, prescaler - 1, 0, FALSE, FALSE, FALSE, TRUE, FALSE);
+		timer_on_off(VibratorTimer, ON);
+		if (TicksPerSec > count)
+			return;
+		count -= TicksPerSec;
+		udelay(1000000);
+	}
 }
 
 void vibrator_off() {
-	// init the timer for turning off and turning it off
-	timer_init(VibratorTimer, 0, 1, 0, 0, FALSE, FALSE, TRUE, FALSE);
+	// turn the vibrator on, and invert tout to set the vibration off
+	timer_init(VibratorTimer, 0, 1, 0, 0, FALSE, FALSE, FALSE, FALSE, FALSE);
 	timer_on_off(VibratorTimer, ON);
 	timer_on_off(VibratorTimer, OFF);
 }
