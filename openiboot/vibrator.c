@@ -100,8 +100,8 @@ void vibrator_once(int time) {
 
 void vibrator_off() {
 	// turn the vibrator on, and invert tout to set the vibration off
-	timer_init(VibratorTimer, 0, 1, 0, 0, FALSE, FALSE, FALSE, FALSE, FALSE);
+	timer_init(VibratorTimer, 0, 1, 0, 0, FALSE, FALSE, TRUE, FALSE, FALSE);
 	timer_on_off(VibratorTimer, ON);
-	timer_on_off(VibratorTimer, OFF);
+	timer_init(VibratorTimer, 0, 1, 0, 0, FALSE, FALSE, FALSE, FALSE, FALSE);
 }
 #endif
