@@ -49,7 +49,9 @@ int multitouch_setup(const uint8_t* ASpeedFirmware, int ASpeedFirmwareLen, const
 #else
 int multitouch_setup(const uint8_t* constructedFirmware, int constructedFirmwareLen);
 #endif
-
+FingerData * fingerData;
 void multitouch_on();
-
+void multitouch_run();
+int SensorHeight;
+int SensorWidth;
 #endif
