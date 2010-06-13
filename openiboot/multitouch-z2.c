@@ -21,8 +21,6 @@ static int InterfaceVersion;
 static int MaxPacketSize;
 static int FamilyID;
 static int FlipNOP;
-static int SensorWidth;
-static int SensorHeight;
 static int SensorColumns;
 static int SensorRows;
 static int BCDVersion;
@@ -956,8 +954,10 @@ int multitouch_setup(const uint8_t* constructedFirmware, int constructedFirmware
 		goto out_free_srp;
 	}
 
-	SensorWidth = *((uint32_t*)&reportBuffer[0]);
-	SensorHeight = *((uint32_t*)&reportBuffer[4]);
+	//SensorWidth = *((uint32_t*)&reportBuffer[0]);
+	//SensorHeight = *((uint32_t*)&reportBuffer[4]);
+	SensorWidth = (9000 - *((uint32_t*)&reportBuffer[0])) * 84 / 73;
+	SensorHeight = (13850 - *((uint32_t*)&reportBuffer[4])) * 84 / 73;
 
 	bufferPrintf("Family ID                : 0x%x\r\n", FamilyID);
 	bufferPrintf("Sensor rows              : 0x%x\r\n", SensorRows);
@@ -1027,7 +1027,7 @@ int mt_spi_txrx(const MTSPISetting* setting, const uint8_t* outBuffer, int outLe
 
 void multitouch_run()
 {
-	while(TRUE)
+	while(GotATN>0)
 	{
 		EnterCriticalSection();
 		if(!GotATN)
@@ -1040,3 +1040,4 @@ void multitouch_run()
 
 		readFrame();
 	}
+}

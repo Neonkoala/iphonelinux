@@ -67,8 +67,9 @@ static void startUSB();
 void OpenIBootStart() {
 	setup_openiboot();
 	pmu_charge_settings(TRUE, FALSE, FALSE);
-#ifdef CONFIG_3G
+#ifndef CONFIG_IPHONE
     	//enable multitouch before displaying menu, only 3g first
+	framebuffer_setdisplaytext(FALSE);
     	nand_setup();
     	fs_setup();
     	int size;

@@ -70,6 +70,7 @@ typedef enum MenuSelection {
 static MenuSelection Selection;
 
 volatile uint32_t* OtherFramebuffer;
+static void drawSelectionBox();
 
 static int touch_watcher()
 {
@@ -257,7 +258,6 @@ int menu_setup(int timeout, int defaultOS) {
 
 	uint64_t startTime = timer_get_system_microtime();
 	int timeoutLeft = (timeout / 1000);
-	drawSelectionBox();
 	while(TRUE) {
 		if(touch_watcher()) {
 		        break;
