@@ -63,6 +63,7 @@ void multitouch_on()
 
 		udelay(15000);
 		MultitouchOn = TRUE;
+		fingerData=0;
 	}
 }
 
@@ -658,7 +659,7 @@ static void newPacket(const uint8_t* data, int len)
 		//hexdump((uint32_t) finger, sizeof(FingerData));
 		finger = (FingerData*) (((uint8_t*) finger) + header->fingerDataLen);
 	}
-
+	fingerData = (FingerData*)(data + (header->headerLen));
 	bufferPrintf("-------END-------\r\n");
 }
 
@@ -985,20 +986,6 @@ int multitouch_setup(const uint8_t* constructedFirmware, int constructedFirmware
 	GotATN = 0;
 	CurNOP = 1;
 
-	while(TRUE)
-	{
-		EnterCriticalSection();
-		if(!GotATN)
-		{
-			LeaveCriticalSection();
-			continue;
-		}
-		--GotATN;
-		LeaveCriticalSection();
-
-		readFrame();
-	}
-
 	return 0;
 
 out_free_srp:
@@ -1037,3 +1024,19 @@ int mt_spi_txrx(const MTSPISetting* setting, const uint8_t* outBuffer, int outLe
 	gpio_pin_output(MT_SPI_CS, 1);
 	return ret;
 }
+
+void multitouch_run()
+{
+	while(TRUE)
+	{
+		EnterCriticalSection();
+		if(!GotATN)
+		{
+			LeaveCriticalSection();
+			continue;
+		}
+		--GotATN;
+		LeaveCriticalSection();
+
+		readFrame();
+	}
