@@ -42,6 +42,7 @@
 #include "wmcodec.h"
 #include "wdt.h"
 #include "als.h"
+#include "multitouch.h"
 
 int received_file_size;
 
@@ -66,10 +67,21 @@ static void startUSB();
 void OpenIBootStart() {
 	setup_openiboot();
 	pmu_charge_settings(TRUE, FALSE, FALSE);
-
+#ifdef CONFIG_3G
+    	//enable multitouch before displaying menu, only 3g first
+    	nand_setup();
+    	fs_setup();
+    	int size;
+    	size = fs_extract(1, "/firmware/zephyr2.bin", (void*) 0x09000000);
+    	if(size < 0) {
+		framebuffer_setdisplaytext(TRUE);
+    	   	bufferPrintf("Cannot find zephyr2.bin\r\n");
+    	} else {
+		multitouch_setup((uint8_t*) 0x09000000, size);
+	}
 	framebuffer_setdisplaytext(TRUE);
 	framebuffer_clear();
-
+#endif 
 #ifndef SMALL
 #ifndef NO_STBIMAGE
 	int defaultOS = 0;
