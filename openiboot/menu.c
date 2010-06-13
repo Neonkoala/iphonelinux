@@ -24,6 +24,7 @@
 #include "hfs/fs.h"
 #include "ftl.h"
 #include "scripting.h"
+#include "multitouch.h"
 
 int globalFtlHasBeenRestored = 0; /* global variable to tell wether a ftl_restore has been done*/
 
@@ -70,6 +71,42 @@ static MenuSelection Selection;
 
 volatile uint32_t* OtherFramebuffer;
 
+static int touch_watcher()
+{
+    multitouch_run();
+    if (fingerData!=0) {
+        //bufferPrintf("finger data %d, %d\r\n",fingerData->x,SensorHeight-fingerData->y);
+        //framebuffer_draw_rect(0xFF0000, (fingerData->x * framebuffer_width()) / SensorWidth - 2 , ((SensorHeight - fingerData->y) * framebuffer_height()) / SensorHeight - 2, 4, 4);
+        //check if inside 
+        int x,y;
+        x = (fingerData->x * framebuffer_width()) / SensorWidth - 2;
+        y = ((SensorHeight - fingerData->y) * framebuffer_height()) / SensorHeight - 2;
+        
+        //check against iphone os
+        if(x>=imgiPhoneOSX && x<= (imgiPhoneOSX+imgiPhoneOSWidth) 
+            && y>=imgiPhoneOSY && y<= (imgiPhoneOSY+imgiPhoneOSHeight) )
+        {
+            Selection = MenuSelectioniPhoneOS;
+        }
+        else if(x>=imgConsoleX && x<= (imgConsoleX+imgConsoleWidth) 
+            && y>=imgConsoleY && y<= (imgConsoleY+imgConsoleHeight) )
+        {
+            Selection = MenuSelectionConsole;
+        }
+        else if(x>=imgAndroidOSX && x<= (imgAndroidOSX+imgAndroidOSWidth) 
+            && y>=imgAndroidOSY && y<= (imgAndroidOSY+imgAndroidOSHeight) )
+        {
+            Selection = MenuSelectionAndroidOS;
+        }
+        else {
+            return FALSE;
+        }
+        drawSelectionBox();
+        fingerData=0;
+        return TRUE;
+    }
+    return FALSE;
+}
 
 static void drawSelectionBox() {
 	volatile uint32_t* oldFB = CurFramebuffer;
@@ -222,6 +259,9 @@ int menu_setup(int timeout, int defaultOS) {
 	int timeoutLeft = (timeout / 1000);
 	drawSelectionBox();
 	while(TRUE) {
+		if(touch_watcher()) {
+		        break;
+        	}
 		char timeoutstr[4] = "";
 		if(timeout >= 0){
 			if(timeoutLeft == 9){
