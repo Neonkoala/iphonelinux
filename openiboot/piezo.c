@@ -21,7 +21,7 @@ void piezo_buzz(int hertz, unsigned int microseconds)
 			prescaler <<= 1;
 		}
 
-		timer_init(PiezoTimer, count >> 1, count, prescaler - 1, 0, FALSE, FALSE, FALSE, FALSE);
+		timer_init(PiezoTimer, count >> 1, count, prescaler - 1, 0, FALSE, FALSE, FALSE, FALSE, FALSE);
 		timer_on_off(PiezoTimer, ON);
 	}
 
