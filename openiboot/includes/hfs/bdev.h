@@ -25,6 +25,32 @@ typedef struct MBR {
 	uint16_t magic;
 } __attribute__ ((packed)) MBR;
 
+typedef struct GPTPartitionRecord {
+	uint64_t type[2];
+	uint64_t guid[2];
+	uint64_t beginLBA;
+	uint64_t endLBA;
+	uint64_t attribute;
+	uint8_t partitionName[0x48];
+} GPTPartitionRecord;
+
+typedef struct GPT {
+	uint64_t signature;
+	uint32_t revision;
+	uint32_t headerSize;
+	uint32_t headerChecksum;
+	uint32_t reserved;
+	uint64_t currentLBA;
+	uint64_t backupLBA;
+	uint64_t firstLBA;
+	uint64_t lastLBA;
+	uint64_t guid[2];
+	uint64_t partitionEntriesFirstLBA;
+	uint32_t numPartitions;
+	uint32_t partitionEntrySize;
+	uint32_t partitionArrayChecksum;
+} __attribute__ ((packed)) GPT;
+
 extern int HasBDevInit;
 
 int bdev_setup();

@@ -63,7 +63,7 @@ int timer_setup() {
 	return 0;
 }
 
-int timer_init(int timer_id, uint32_t interval, uint32_t interval2, uint32_t prescaler, uint32_t z, Boolean option24, Boolean option28, Boolean option11, Boolean interrupts) {
+int timer_init(int timer_id, uint32_t interval, uint32_t interval2, uint32_t prescaler, uint32_t z, Boolean option24, Boolean option28, Boolean option11, Boolean option5, Boolean interrupts) {
 	if(timer_id >= NUM_TIMERS || timer_id < 0) {
 		return -1;
 	}
@@ -86,6 +86,7 @@ int timer_init(int timer_id, uint32_t interval, uint32_t interval2, uint32_t pre
 	/* set the rest of the options */
 	config |= (Timers[timer_id].divider << 8)
 			| (z << 3)
+			| (option5 ? (1 << 5) : 0)
 			| (Timers[timer_id].option6 ? (1 << 6) : 0)
 			| (option11 ? (1 << 11) : 0);
 

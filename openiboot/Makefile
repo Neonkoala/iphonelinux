@@ -11,11 +11,11 @@ HFS_SRC_C           = hfs/btree.c hfs/catalog.c hfs/extents.c hfs/fastunicodecom
 MENU_SRC_C          = menu.c stb_image.c
 
 ifeq ($(PLATFORM),IPHONE)
-	SRC_C          += camera.c radio.c als.c multitouch.c wm8958.c
+	SRC_C          += camera.c radio.c als.c multitouch.c wm8958.c vibrator.c
 endif
 
 ifeq ($(PLATFORM),3G)
-	SRC_C          += camera.c radio.c alsISL29003.c multitouch-z2.c wm8991.c
+	SRC_C          += camera.c radio.c alsISL29003.c multitouch-z2.c wm8991.c vibrator.c
 endif
 
 ifeq ($(PLATFORM),IPOD)

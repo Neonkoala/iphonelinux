@@ -28,6 +28,7 @@
 #include "radio.h"
 #include "als.h"
 #include "piezo.h"
+#include "vibrator.h"
 
 void cmd_reboot(int argc, char** argv) {
 	Reboot();
@@ -1031,6 +1032,7 @@ void cmd_radio_hangup(int argc, char** argv) {
 	radio_hangup(argv[1]);
 }
 
+#ifdef CONFIG_IPHONE
 void cmd_vibrator_loop(int argc, char** argv)
 {
 	if(argc < 4) {
@@ -1068,6 +1070,45 @@ void cmd_vibrator_off(int argc, char** argv)
 
 	vibrator_off();
 }
+#endif
+#ifdef CONFIG_3G
+void cmd_vibrator_loop(int argc, char** argv)
+{
+	if(argc < 3) {
+		bufferPrintf("Usage: %s <frequency 1-12000000> <duty time in percent> <time vibrator on in ms>\r\n", argv[0]);
+		return;
+	}
+
+	int frequency = parseNumber(argv[1]);
+	int period = parseNumber(argv[2]);
+	int time = parseNumber(argv[3]) * 1000;
+
+	bufferPrintf("Turning on vibrator at frequency %d with %d percent duty time for %d microseconds.\r\n", frequency, period, time);
+
+	vibrator_loop(frequency, period, time);
+}
+
+void cmd_vibrator_once(int argc, char** argv)
+{
+	if(argc < 2) {
+		bufferPrintf("Usage: %s <duration in ms>\r\n", argv[0]);
+		return;
+	}
+
+	int time = parseNumber(argv[1]) * 1000;
+
+	bufferPrintf("Turning on vibrator for %d microseconds.\r\n", time);
+
+	vibrator_once(time);
+}
+
+void cmd_vibrator_off(int argc, char** argv)
+{
+	bufferPrintf("Turning off vibrator.\r\n");
+
+	vibrator_off();
+}
+#endif
 #endif
 
 void cmd_boot_iphoneos(int argc, char** argv)
