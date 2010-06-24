@@ -119,7 +119,7 @@ int send_file(struct libusb_device_handle *handle, const char* filename) {
 		} else {
 			if(response[4] != 5) {
 				printf("send_file: invalid status.\n");
-//				return -1;
+				return -1;
 			}
 		}
 
@@ -132,9 +132,9 @@ int send_file(struct libusb_device_handle *handle, const char* filename) {
 			return -1;
 
 		} else {
-			if(response[4] != i) {
+			if(response[4] != i && response[4] != i-2) {
 				printf("send_file: invalid status.\n");
-//				return -1;
+				return -1;
 			}
 		}
 	}
